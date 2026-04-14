@@ -58,11 +58,10 @@ export async function saveUserMessages(
 ): Promise<void> {
   if (supabase) {
     try {
-      await supabase.from('user_chats').upsert({
-        username,
-        messages,
-        updated_at: new Date().toISOString(),
-      });
+      await supabase.from('user_chats').upsert(
+        { username, messages, updated_at: new Date().toISOString() },
+        { onConflict: 'username' }
+      );
       return;
     } catch {
       // fall through

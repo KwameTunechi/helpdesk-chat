@@ -40,6 +40,9 @@ const App: React.FC = () => {
   });
   const [activeUserCount] = useState(1);
   const isAuthenticated = useRef(false);
+  // Guard: only persist messages AFTER the initial load completes, so we
+  // never overwrite Supabase with [DEFAULT_MESSAGE] on login.
+  const messagesLoaded = useRef(false);
 
   // Load all tickets on first mount
   useEffect(() => {
@@ -48,7 +51,7 @@ const App: React.FC = () => {
 
   // Auto-save messages to Supabase (+ localStorage backup) whenever they change
   useEffect(() => {
-    if (isAuthenticated.current && user) {
+    if (isAuthenticated.current && user && messagesLoaded.current) {
       saveUserMessages(user, messages);
     }
   }, [messages, user]);
@@ -60,26 +63,33 @@ const App: React.FC = () => {
 
   const handleAdminLogin = async (username: string) => {
     isAuthenticated.current = true;
+    messagesLoaded.current = false;
     setAuthState('authenticated');
     setUserRole('admin');
     setUser(username);
     setCurrentView(AppView.ANALYTICS);
+    // Load tickets fresh so admin sees tickets created since mount
+    loadAllTickets().then(setTickets);
     const msgs = await loadUserMessages(username);
+    messagesLoaded.current = true;
     setMessages(msgs);
   };
 
   const handleUserLogin = async (username: string) => {
     isAuthenticated.current = true;
+    messagesLoaded.current = false;
     setAuthState('authenticated');
     setUserRole('user');
     setUser(username);
     setCurrentView(AppView.CHAT);
     const msgs = await loadUserMessages(username);
+    messagesLoaded.current = true;
     setMessages(msgs);
   };
 
   const handleLogout = () => {
     isAuthenticated.current = false;
+    messagesLoaded.current = false;
     setAuthState('landing');
     setUserRole(null);
     setUser(null);
@@ -149,10 +159,18 @@ const App: React.FC = () => {
           <TicketList
             tickets={tickets.filter((t) => t.status !== 'Resolved' && t.status !== 'Closed')}
             onUpdateStatus={updateTicketStatus}
+            onRefresh={() => loadAllTickets().then(setTickets)}
           />
         );
       case AppView.RECORDS:
-        return <TicketList tickets={tickets} onUpdateStatus={updateTicketStatus} isReadOnly={true} />;
+        return (
+          <TicketList
+            tickets={tickets}
+            onUpdateStatus={updateTicketStatus}
+            isReadOnly={true}
+            onRefresh={() => loadAllTickets().then(setTickets)}
+          />
+        );
       default:
         return userRole === 'admin' ? (
           <Analytics stats={stats} tickets={tickets} activeUserCount={activeUserCount} />
