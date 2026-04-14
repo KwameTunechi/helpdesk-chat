@@ -10,7 +10,15 @@ const USERS_KEY = 'fixchat_users';
 
 // Default built-in accounts
 const DEFAULT_ACCOUNTS: Record<string, string> = {
-  user: 'user123'
+  user: 'user123',
+  evans: 'user123',
+  clive: 'user123',
+  mina: 'user123',
+  emma: 'user123',
+  james: 'user123',
+  ruth: 'user123',
+  daniel: 'user123',
+  eben: 'user123'
 };
 
 const UserLoginPage: React.FC<UserLoginPageProps> = ({ onLogin, onBack }) => {

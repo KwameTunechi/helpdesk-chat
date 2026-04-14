@@ -8,7 +8,7 @@ interface ChatWindowProps {
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   onUpdateStats: (category: keyof SessionStats) => void;
-  onCreateTicket: (ticket: Omit<Ticket, 'id' | 'createdAt' | 'status'>) => void;
+  onCreateTicket: (ticket: Omit<Ticket, 'id' | 'createdAt' | 'status'>) => string;
 }
 
 const QUICK_ACTIONS = [
@@ -114,9 +114,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, setMessages, onUpdate
 
   const handleEscalationSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onCreateTicket({ 
-      subject: escalationForm.subject || "Manual Escalation from Chat", 
-      category: "Escalated", 
+    const ticketId = onCreateTicket({
+      subject: escalationForm.subject || "Manual Escalation from Chat",
+      category: "Escalated",
       priority: "Emergency",
       description: escalationForm.description,
       escalationReason: escalationForm.reason,
@@ -125,11 +125,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, setMessages, onUpdate
       contact: escalationForm.contact,
       department: escalationForm.department
     });
-    
+
     const assistMsg: Message = {
       id: Date.now().toString(),
       role: 'assistant',
-      content: `I have opened an Emergency Ticket (ID: TKT-XXXX) for you. \n\nDetails Submitted:\n- Subject: ${escalationForm.subject}\n- User: ${escalationForm.userName}\n- Department: ${escalationForm.department}\n\nOur human IT team has been notified and will contact you at ${escalationForm.contact} shortly.`,
+      content: `I have opened an Emergency Ticket (ID: ${ticketId}) for you.\n\nDetails Submitted:\n- Subject: ${escalationForm.subject}\n- User: ${escalationForm.userName}\n- Department: ${escalationForm.department}\n\nOur human IT team has been notified and will contact you at ${escalationForm.contact} shortly.`,
       timestamp: new Date()
     };
     setMessages(prev => [...prev, assistMsg]);

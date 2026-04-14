@@ -108,7 +108,7 @@ const App: React.FC = () => {
     }));
   };
 
-  const createTicket = (ticketData: Omit<Ticket, 'id' | 'createdAt' | 'status'>) => {
+  const createTicket = (ticketData: Omit<Ticket, 'id' | 'createdAt' | 'status'>): string => {
     const newTicket: Ticket = {
       ...ticketData,
       id: `TKT-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -116,6 +116,7 @@ const App: React.FC = () => {
       status: 'Escalated'
     };
     setTickets(prev => [newTicket, ...prev]);
+    return newTicket.id;
   };
 
   const updateTicketStatus = (id: string, status: Ticket['status'], closeReason?: string) => {
