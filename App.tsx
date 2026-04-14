@@ -21,8 +21,8 @@ import {
 
 type AuthState = 'landing' | 'login' | 'user-login' | 'authenticated';
 
-// localStorage backup for tickets (also kept as Supabase fallback)
 const LS_TICKETS = 'fixchat_tickets';
+const SESSION_KEY = 'fixchat_session';
 
 const App: React.FC = () => {
   const [authState, setAuthState] = useState<AuthState>('landing');
@@ -30,6 +30,7 @@ const App: React.FC = () => {
   const [user, setUser] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<AppView>(AppView.CHAT);
   const [messages, setMessages] = useState<Message[]>([DEFAULT_MESSAGE]);
+  const [chatLoading, setChatLoading] = useState(false);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [stats, setStats] = useState<SessionStats>({
     access: 0,
@@ -40,8 +41,6 @@ const App: React.FC = () => {
   });
   const [activeUserCount] = useState(1);
   const isAuthenticated = useRef(false);
-  // Guard: only persist messages AFTER the initial load completes, so we
-  // never overwrite Supabase with [DEFAULT_MESSAGE] on login.
   const messagesLoaded = useRef(false);
 
   // Load all tickets on first mount
@@ -49,7 +48,20 @@ const App: React.FC = () => {
     loadAllTickets().then(setTickets);
   }, []);
 
-  // Auto-save messages to Supabase (+ localStorage backup) whenever they change
+  // Restore session after page refresh
+  useEffect(() => {
+    const saved = sessionStorage.getItem(SESSION_KEY);
+    if (!saved) return;
+    try {
+      const { username, role } = JSON.parse(saved);
+      if (role === 'admin') handleAdminLogin(username);
+      else handleUserLogin(username);
+    } catch {
+      sessionStorage.removeItem(SESSION_KEY);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-save messages whenever they change (only after initial load)
   useEffect(() => {
     if (isAuthenticated.current && user && messagesLoaded.current) {
       saveUserMessages(user, messages);
@@ -64,32 +76,38 @@ const App: React.FC = () => {
   const handleAdminLogin = async (username: string) => {
     isAuthenticated.current = true;
     messagesLoaded.current = false;
+    setChatLoading(true);
     setAuthState('authenticated');
     setUserRole('admin');
     setUser(username);
     setCurrentView(AppView.ANALYTICS);
-    // Load tickets fresh so admin sees tickets created since mount
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ username, role: 'admin' }));
     loadAllTickets().then(setTickets);
     const msgs = await loadUserMessages(username);
     messagesLoaded.current = true;
+    setChatLoading(false);
     setMessages(msgs);
   };
 
   const handleUserLogin = async (username: string) => {
     isAuthenticated.current = true;
     messagesLoaded.current = false;
+    setChatLoading(true);
     setAuthState('authenticated');
     setUserRole('user');
     setUser(username);
     setCurrentView(AppView.CHAT);
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ username, role: 'user' }));
     const msgs = await loadUserMessages(username);
     messagesLoaded.current = true;
+    setChatLoading(false);
     setMessages(msgs);
   };
 
   const handleLogout = () => {
     isAuthenticated.current = false;
     messagesLoaded.current = false;
+    sessionStorage.removeItem(SESSION_KEY);
     setAuthState('landing');
     setUserRole(null);
     setUser(null);
@@ -109,7 +127,7 @@ const App: React.FC = () => {
       status: 'Escalated',
     };
     setTickets((prev) => [newTicket, ...prev]);
-    insertTicket(newTicket); // persist to Supabase
+    insertTicket(newTicket);
     return newTicket.id;
   };
 
@@ -117,7 +135,7 @@ const App: React.FC = () => {
     setTickets((prev) =>
       prev.map((t) => (t.id === id ? { ...t, status, closeReason } : t))
     );
-    patchTicket(id, status, closeReason); // persist to Supabase
+    patchTicket(id, status, closeReason);
   };
 
   if (authState === 'landing') {
@@ -146,6 +164,7 @@ const App: React.FC = () => {
             setMessages={setMessages}
             onUpdateStats={updateStats}
             onCreateTicket={createTicket}
+            isLoading={chatLoading}
           />
         );
       case AppView.KNOWLEDGE_BASE:
@@ -180,6 +199,7 @@ const App: React.FC = () => {
             setMessages={setMessages}
             onUpdateStats={updateStats}
             onCreateTicket={createTicket}
+            isLoading={chatLoading}
           />
         );
     }
