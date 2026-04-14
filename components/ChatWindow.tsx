@@ -155,12 +155,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, setMessages, onUpdate
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 overflow-hidden relative">
+    <div className="flex flex-col bg-slate-50 overflow-hidden relative" style={{ height: '100%', minHeight: 0 }}>
       {/* Escalation Modal */}
       {showEscalationModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b flex justify-between items-center bg-slate-50">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-lg sm:rounded-3xl rounded-t-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom sm:zoom-in-95 duration-200">
+            <div className="p-4 md:p-6 border-b flex justify-between items-center bg-slate-50">
               <div>
                 <h3 className="text-xl font-black text-slate-800">Escalate to IT Human Support</h3>
                 <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Emergency Ticket Creation</p>
@@ -172,7 +172,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, setMessages, onUpdate
               </button>
             </div>
             
-            <form onSubmit={handleEscalationSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+            <form onSubmit={handleEscalationSubmit} className="p-4 md:p-6 space-y-4 max-h-[65vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Full Name</label>
@@ -286,7 +286,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, setMessages, onUpdate
         </button>
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth bg-slate-50">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 md:p-8 space-y-4 md:space-y-6 scroll-smooth bg-slate-50 min-h-0">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
             <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm ${
@@ -354,9 +354,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, setMessages, onUpdate
         ))}
       </div>
 
-      <div className="px-4 py-3 border-t bg-white">
+      <div className="px-3 py-2 border-t bg-white shrink-0">
         <div className="max-w-4xl mx-auto">
-          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
             {QUICK_ACTIONS.map((action, i) => (
               <button 
                 key={i}
@@ -379,8 +379,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, setMessages, onUpdate
         </div>
       </div>
 
-      <div className="p-3 md:p-6 bg-white shrink-0 border-t shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
-        <div className="max-w-4xl mx-auto flex gap-2 md:gap-3 items-center">
+      <div className="p-3 md:p-4 bg-white shrink-0 border-t shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
+        <div className="max-w-4xl mx-auto flex gap-2 items-center">
           <div className="flex-1 relative flex items-center bg-slate-100 rounded-2xl px-4">
             <input
               type="text"
@@ -388,7 +388,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, setMessages, onUpdate
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Describe your IT problem..."
-              className="flex-1 bg-transparent border-none py-3 md:py-3.5 focus:ring-0 outline-none font-medium text-sm md:text-base text-slate-700"
+              className="flex-1 bg-transparent border-none py-3 focus:ring-0 outline-none font-medium text-sm text-slate-700"
             />
           </div>
           <button

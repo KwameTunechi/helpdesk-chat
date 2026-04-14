@@ -16,21 +16,21 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectAdmin, onSelectUser }
       </div>
 
       <div className="max-w-4xl w-full z-10">
-        <div className="text-center mb-12 animate-in fade-in slide-in-from-top duration-700">
-          <h1 className="text-5xl md:text-6xl font-black text-white tracking-tighter mb-4">
+        <div className="text-center mb-8 md:mb-12 animate-in fade-in slide-in-from-top duration-700">
+          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-3">
             <span className="text-blue-500">FixChat</span>
           </h1>
-          <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto">
-            Your intelligent companion for workplace IT support. 
+          <p className="text-slate-400 text-base md:text-xl max-w-2xl mx-auto px-2">
+            Your intelligent companion for workplace IT support.
             Select your access level to begin.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           {/* User Card */}
-          <button 
+          <button
             onClick={onSelectUser}
-            className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/50 p-8 rounded-3xl transition-all duration-300 text-left overflow-hidden animate-in fade-in slide-in-from-left duration-700"
+            className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/50 p-6 md:p-8 rounded-3xl transition-all duration-300 text-left overflow-hidden animate-in fade-in slide-in-from-left duration-700"
           >
             <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
               <svg className="w-24 h-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,9 +57,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectAdmin, onSelectUser }
           </button>
 
           {/* Admin Card */}
-          <button 
+          <button
             onClick={onSelectAdmin}
-            className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-500/50 p-8 rounded-3xl transition-all duration-300 text-left overflow-hidden animate-in fade-in slide-in-from-right duration-700"
+            className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-500/50 p-6 md:p-8 rounded-3xl transition-all duration-300 text-left overflow-hidden animate-in fade-in slide-in-from-right duration-700"
           >
             <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
               <svg className="w-24 h-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

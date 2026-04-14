@@ -12,6 +12,10 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
+        /* Fix iOS Safari 100vh issue */
+        .h-app { height: 100vh; height: 100dvh; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 <script type="importmap">
 {

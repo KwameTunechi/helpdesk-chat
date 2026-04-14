@@ -112,8 +112,8 @@ const TicketList: React.FC<TicketListProps> = ({ tickets, onUpdateStatus, isRead
               <div key={ticket.id} className={`bg-white rounded-3xl border p-6 flex flex-col gap-6 shadow-sm transition-all ${
                 ticket.status === 'Resolved' ? 'opacity-70 bg-slate-50' : 'hover:shadow-md'
               }`}>
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-start gap-3 md:gap-4">
                     <div className={`shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center font-black text-base ${
                       ticket.status === 'Resolved' 
                         ? 'bg-slate-200 text-slate-500' 
@@ -143,11 +143,11 @@ const TicketList: React.FC<TicketListProps> = ({ tickets, onUpdateStatus, isRead
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div>
                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Status</p>
                       <p className={`text-sm font-black ${
-                        ticket.status === 'Resolved' ? 'text-green-600' : 
+                        ticket.status === 'Resolved' ? 'text-green-600' :
                         ticket.status === 'Closed' ? 'text-slate-600' :
                         ticket.status === 'In Progress' ? 'text-amber-600' :
                         ticket.status === 'Escalated' ? 'text-red-600' : 'text-blue-600'
@@ -156,7 +156,7 @@ const TicketList: React.FC<TicketListProps> = ({ tickets, onUpdateStatus, isRead
                       </p>
                     </div>
                     {!isReadOnly && ticket.status !== 'Resolved' && ticket.status !== 'Closed' && (
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         {ticket.status === 'Escalated' && (
                           <button 
                             onClick={() => onUpdateStatus(ticket.id, 'Open')}
