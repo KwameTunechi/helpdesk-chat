@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { io } from 'socket.io-client';
 import Layout from './components/Layout';
 import ChatWindow from './components/ChatWindow';
 import KnowledgeBase from './components/KnowledgeBase';
@@ -61,17 +60,7 @@ const App: React.FC = () => {
     email: 0,
     hardware: 0
   });
-  const [activeUserCount, setActiveUserCount] = useState(1);
-
-  useEffect(() => {
-    const socket = io();
-    socket.on('user_count', (count: number) => {
-      setActiveUserCount(count);
-    });
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  const [activeUserCount] = useState(1);
 
   // Persist chat messages to localStorage whenever they change (only after login)
   useEffect(() => {
