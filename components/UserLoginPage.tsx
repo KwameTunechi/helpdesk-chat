@@ -6,10 +6,8 @@ interface UserLoginPageProps {
   onBack: () => void;
 }
 
-const USERS_KEY = 'fixchat_users';
-
-// Default built-in accounts
-const DEFAULT_ACCOUNTS: Record<string, string> = {
+// Active directory — only provisioned accounts can log in
+const ACTIVE_DIRECTORY: Record<string, string> = {
   user: 'user123',
   evans: 'user123',
   clive: 'user123',
@@ -22,24 +20,10 @@ const DEFAULT_ACCOUNTS: Record<string, string> = {
 };
 
 const UserLoginPage: React.FC<UserLoginPageProps> = ({ onLogin, onBack }) => {
-  const [mode, setMode] = useState<'login' | 'register'>('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  const getUsers = (): Record<string, string> => {
-    try {
-      return JSON.parse(localStorage.getItem(USERS_KEY) || '{}');
-    } catch {
-      return {};
-    }
-  };
-
-  const saveUsers = (users: Record<string, string>) => {
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,38 +35,16 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onLogin, onBack }) => {
     }
 
     setIsLoading(true);
-    const users = getUsers();
     const key = username.trim().toLowerCase();
 
     setTimeout(() => {
-      if (mode === 'register') {
-        if (password !== confirmPassword) {
-          setError('Passwords do not match');
-          setIsLoading(false);
-          return;
-        }
-        if (password.length < 4) {
-          setError('Password must be at least 4 characters');
-          setIsLoading(false);
-          return;
-        }
-        if (DEFAULT_ACCOUNTS[key] || users[key]) {
-          setError('Username already taken. Please log in instead.');
-          setIsLoading(false);
-          return;
-        }
-        users[key] = password;
-        saveUsers(users);
-        onLogin(key);
-      } else {
-        const validPassword = DEFAULT_ACCOUNTS[key] ?? users[key];
-        if (!validPassword || validPassword !== password) {
-          setError('Invalid username or password');
-          setIsLoading(false);
-          return;
-        }
-        onLogin(key);
+      const validPassword = ACTIVE_DIRECTORY[key];
+      if (!validPassword || validPassword !== password) {
+        setError('Invalid credentials. Contact IT to get access.');
+        setIsLoading(false);
+        return;
       }
+      onLogin(key);
     }, 600);
   };
 
@@ -104,30 +66,13 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onLogin, onBack }) => {
               <h1 className="text-2xl font-bold text-slate-900">
                 <span className="text-blue-600">FixChat</span>
               </h1>
-              <p className="text-slate-500 text-xs">User Portal</p>
+              <p className="text-slate-500 text-xs">Employee Portal</p>
             </div>
           </div>
 
-          {/* Login / Register Toggle */}
-          <div className="flex bg-slate-100 rounded-xl p-1 mb-6">
-            <button
-              type="button"
-              onClick={() => { setMode('login'); setError(''); }}
-              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${
-                mode === 'login' ? 'bg-white shadow text-slate-800' : 'text-slate-500'
-              }`}
-            >
-              Login
-            </button>
-            <button
-              type="button"
-              onClick={() => { setMode('register'); setError(''); }}
-              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${
-                mode === 'register' ? 'bg-white shadow text-slate-800' : 'text-slate-500'
-              }`}
-            >
-              Register
-            </button>
+          <div className="mb-6">
+            <h2 className="text-xl font-black text-slate-800">Welcome back</h2>
+            <p className="text-sm text-slate-500 mt-1">Sign in with your company credentials to continue.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -144,7 +89,7 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onLogin, onBack }) => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
-                placeholder="e.g. kofi.mensah"
+                placeholder="Enter your username"
                 autoComplete="username"
               />
             </div>
@@ -157,23 +102,9 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onLogin, onBack }) => {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
                 placeholder="••••••••"
-                autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
+                autoComplete="current-password"
               />
             </div>
-
-            {mode === 'register' && (
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Confirm Password</label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                />
-              </div>
-            )}
 
             <button
               type="submit"
@@ -188,15 +119,15 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onLogin, onBack }) => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  {mode === 'register' ? 'Creating account...' : 'Signing in...'}
+                  Signing in...
                 </span>
-              ) : mode === 'register' ? 'Create Account' : 'Sign In'}
+              ) : 'Sign In'}
             </button>
           </form>
 
           <div className="mt-8 pt-6 border-t border-slate-100 text-center">
             <p className="text-xs text-slate-400">
-              Your chat history is saved and available every time you log in.
+              Access is restricted to registered company staff only.
             </p>
           </div>
         </div>
