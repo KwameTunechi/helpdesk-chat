@@ -23,13 +23,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
     }
 
     setIsLoading(true);
-    
+
     // Simulate authentication
     setTimeout(() => {
-      if (username === 'admin' && password === 'password' && twoFactorCode === '123456') {
+      if (username === 'admin' && password === 'admin123' && twoFactorCode === '123456') {
         onLogin(username);
       } else {
-        setError('Invalid credentials or 2FA code. Hint: admin/password/123456');
+        setError('Invalid credentials or 2FA code');
         setIsLoading(false);
       }
     }, 1000);

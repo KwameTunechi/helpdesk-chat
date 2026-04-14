@@ -8,6 +8,11 @@ interface UserLoginPageProps {
 
 const USERS_KEY = 'fixchat_users';
 
+// Default built-in accounts
+const DEFAULT_ACCOUNTS: Record<string, string> = {
+  user: 'user123'
+};
+
 const UserLoginPage: React.FC<UserLoginPageProps> = ({ onLogin, onBack }) => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [username, setUsername] = useState('');
@@ -53,7 +58,7 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onLogin, onBack }) => {
           setIsLoading(false);
           return;
         }
-        if (users[key]) {
+        if (DEFAULT_ACCOUNTS[key] || users[key]) {
           setError('Username already taken. Please log in instead.');
           setIsLoading(false);
           return;
@@ -62,7 +67,8 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onLogin, onBack }) => {
         saveUsers(users);
         onLogin(key);
       } else {
-        if (!users[key] || users[key] !== password) {
+        const validPassword = DEFAULT_ACCOUNTS[key] ?? users[key];
+        if (!validPassword || validPassword !== password) {
           setError('Invalid username or password');
           setIsLoading(false);
           return;
