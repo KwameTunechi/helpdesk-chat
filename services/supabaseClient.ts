@@ -9,3 +9,10 @@ export const supabase: SupabaseClient | null =
   supabaseUrl && supabaseAnonKey
     ? createClient(supabaseUrl, supabaseAnonKey)
     : null;
+
+// Log connection status on startup so it's visible in DevTools console
+if (supabase) {
+  console.log('[Supabase] Connected to:', supabaseUrl);
+} else {
+  console.warn('[Supabase] NOT connected — env vars missing. Using localStorage fallback.');
+}
