@@ -29,14 +29,14 @@ function buildCategoryResponse(cat: ITProblemCategory): string {
 function buildResponse(userMessage: string, history: ChatHistory): string {
   const lower = userMessage.toLowerCase().trim();
 
-  // Category number shortcut (1-5)
-  const numMatch = lower.match(/^[1-5]$/);
+  // Category number shortcut (1-5) — match even if user types "5." or "5 " etc.
+  const numMatch = lower.match(/^[1-5][\s.)]?$/);
   if (numMatch) {
     return buildCategoryResponse(IT_CATEGORIES[parseInt(numMatch[0]) - 1]);
   }
 
-  // Greeting
-  if (isGreeting(lower)) {
+  // Greeting or short unclear input
+  if (isGreeting(lower) || lower.length <= 3) {
     return `Akwaaba! I am your FixChat IT Helpdesk Assistant.\n\nPlease select a category or describe your IT problem:\n\n${CATEGORY_LIST}\n\nOr simply type your issue and I will help you directly.`;
   }
 
