@@ -168,34 +168,34 @@ const TicketList: React.FC<TicketListProps> = ({ tickets, onUpdateStatus, isRead
                       </p>
                     </div>
                     {!isReadOnly && ticket.status !== 'Resolved' && ticket.status !== 'Closed' && (
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                         {ticket.status === 'Escalated' && (
-                          <button 
+                          <button
                             onClick={() => onUpdateStatus(ticket.id, 'Open')}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] px-4 py-2 rounded-xl transition-all shadow-lg active:scale-95 uppercase tracking-widest"
+                            className="flex-1 sm:flex-none bg-blue-600 active:bg-blue-700 text-white font-black text-[10px] px-4 py-3 sm:py-2 rounded-xl transition-all shadow-lg active:scale-95 uppercase tracking-widest min-h-[44px] sm:min-h-0"
                           >
                             Acknowledge
                           </button>
                         )}
                         {ticket.status === 'Open' && (
-                          <button 
+                          <button
                             onClick={() => onUpdateStatus(ticket.id, 'In Progress')}
-                            className="bg-amber-500 hover:bg-amber-600 text-white font-black text-[10px] px-4 py-2 rounded-xl transition-all shadow-lg active:scale-95 uppercase tracking-widest"
+                            className="flex-1 sm:flex-none bg-amber-500 active:bg-amber-600 text-white font-black text-[10px] px-4 py-3 sm:py-2 rounded-xl transition-all shadow-lg active:scale-95 uppercase tracking-widest min-h-[44px] sm:min-h-0"
                           >
                             Start Work
                           </button>
                         )}
                         {ticket.status === 'In Progress' && (
-                          <button 
+                          <button
                             onClick={() => onUpdateStatus(ticket.id, 'Resolved')}
-                            className="bg-green-600 hover:bg-green-700 text-white font-black text-[10px] px-4 py-2 rounded-xl transition-all shadow-lg active:scale-95 uppercase tracking-widest"
+                            className="flex-1 sm:flex-none bg-green-600 active:bg-green-700 text-white font-black text-[10px] px-4 py-3 sm:py-2 rounded-xl transition-all shadow-lg active:scale-95 uppercase tracking-widest min-h-[44px] sm:min-h-0"
                           >
                             Resolve
                           </button>
                         )}
-                        <button 
+                        <button
                           onClick={() => setClosingTicketId(ticket.id)}
-                          className="bg-slate-800 hover:bg-slate-900 text-white font-black text-[10px] px-4 py-2 rounded-xl transition-all shadow-lg active:scale-95 uppercase tracking-widest"
+                          className="flex-1 sm:flex-none bg-slate-800 active:bg-slate-900 text-white font-black text-[10px] px-4 py-3 sm:py-2 rounded-xl transition-all shadow-lg active:scale-95 uppercase tracking-widest min-h-[44px] sm:min-h-0"
                         >
                           Close
                         </button>

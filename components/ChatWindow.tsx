@@ -156,7 +156,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, setMessages, onUpdate
   };
 
   return (
-    <div className="flex flex-col bg-slate-50 overflow-hidden relative" style={{ height: '100%', minHeight: 0 }}>
+    <div className="flex flex-col bg-slate-50 overflow-hidden relative" style={{ height: '100%', minHeight: 0 }} onFocus={() => { setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }), 300); }}>
       {/* Escalation Modal */}
       {showEscalationModal && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">

@@ -80,7 +80,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ stats, tickets, activeUserCount }
     <div className="h-full overflow-y-auto bg-slate-50">
       <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-8 pb-32">
         {/* Stat Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           <StatCard title="Active Users" value={activeUserCount.toString()} subtitle="Currently Interfacing" color="text-indigo-600" isLive={true} />
           <StatCard title="Resolution Rate" value={`${resolutionRate}%`} subtitle="SLA Target 90%" color="text-green-600" />
           <StatCard title="Active Tickets" value={tickets.filter(t => t.status !== 'Resolved' && t.status !== 'Closed').length.toString()} subtitle="Requires Attention" color="text-blue-600" />
@@ -102,7 +102,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ stats, tickets, activeUserCount }
                 </div>
               </div>
               
-              <div className="h-[250px] sm:h-[300px] w-full">
+              <div className="h-[180px] sm:h-[260px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={ticketData} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -141,7 +141,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ stats, tickets, activeUserCount }
                 </div>
               </div>
               
-              <div className="h-[250px] sm:h-[300px] w-full">
+              <div className="h-[180px] sm:h-[260px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={lifecycleData} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -231,19 +231,19 @@ const Analytics: React.FC<AnalyticsProps> = ({ stats, tickets, activeUserCount }
 };
 
 const StatCard: React.FC<{ title: string; value: string; subtitle: string; color?: string; isLive?: boolean }> = ({ title, value, subtitle, color = "text-slate-800", isLive }) => (
-  <div className="bg-white p-6 rounded-3xl border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+  <div className="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
     {isLive && (
-      <div className="absolute top-4 right-4 flex items-center gap-1.5">
+      <div className="absolute top-3 right-3 md:top-4 md:right-4 flex items-center gap-1">
         <span className="relative flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
         </span>
-        <span className="text-[8px] font-black text-indigo-500 uppercase tracking-widest">Live</span>
+        <span className="text-[8px] font-black text-indigo-500 uppercase tracking-widest hidden sm:block">Live</span>
       </div>
     )}
-    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{title}</p>
-    <p className={`text-3xl font-black tracking-tight ${color}`}>{value}</p>
-    <p className="text-[10px] text-slate-500 font-bold mt-1 uppercase tracking-tighter opacity-70">{subtitle}</p>
+    <p className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-tight">{title}</p>
+    <p className={`text-2xl md:text-3xl font-black tracking-tight ${color}`}>{value}</p>
+    <p className="text-[9px] md:text-[10px] text-slate-500 font-bold mt-1 uppercase tracking-tighter opacity-70 leading-tight">{subtitle}</p>
   </div>
 );
 
