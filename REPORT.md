@@ -74,11 +74,16 @@ A custom-built Natural Language Processing (NLP) engine was developed as the cor
 
 **Intent Detection via Regex Pattern Matching:**
 ```
-Access/Login issues   → /\b(login|password|access|locked|2fa|vpn|otp)\b/
-Software Performance  → /\b(slow|frozen|crash|error|not responding|lagging)\b/
-Network/Wi-Fi         → /\b(internet|wifi|wi-fi|network|offline|disconnected)\b/
-Email                 → /\b(email|mail|outlook|inbox|attachment|mailbox)\b/
-Hardware              → /\b(printer|screen|monitor|computer|keyboard|paper jam)\b/
+Access/Login issues   → /\b(1|login|password|access|locked|account|forgot|reset|
+                          credentials|otp|2fa|vpn|remote|sign in|sign-in)\b/
+Software Performance  → /\b(2|slow|frozen|crash|error|software|app|system|
+                          performance|loading|stuck|freezing|not responding|lagging)\b/
+Network/Wi-Fi         → /\b(3|internet|wifi|wi-fi|network|connection|offline|
+                          disconnected|browser|no signal|pages)\b/
+Email                 → /\b(4|email|mail|outlook|inbox|attachment|send|receive|
+                          mailbox|spam|junk|storage)\b/
+Hardware              → /\b(5|printer|print|screen|monitor|computer|dark|startup|
+                          hardware|keyboard|mouse|projector|paper jam)\b/
 ```
 
 **Conversation Context Awareness:**
@@ -92,7 +97,7 @@ Responses are streamed word-by-word with 18ms intervals, creating a natural conv
 
 #### 2.1.2 Google Gemini Integration (System Architecture)
 
-The system was designed with Google Gemini 1.5 Flash as the cloud AI backbone. A detailed system prompt (`SYSTEM_INSTRUCTION`) was engineered to contextualise the AI for Ghanaian workplace environments:
+A detailed system prompt (`SYSTEM_INSTRUCTION`) has been fully engineered in `constants.ts` to contextualise Google Gemini 1.5 Flash for Ghanaian workplace environments, ready for activation:
 
 ```
 - Ghana-specific terminology: "Internet provider" instead of "ISP"
@@ -102,7 +107,7 @@ The system was designed with Google Gemini 1.5 Flash as the cloud AI backbone. A
 - Mandatory interaction flow for first-time and returning users
 ```
 
-This dual-layer approach (local rule engine + cloud AI architecture) provides resilience — the system operates without external API dependency while remaining upgradeable to full Gemini integration.
+The current deployment runs on the local NLP engine for zero-cost, zero-latency operation. The Gemini prompt and architecture are fully prepared — switching to the cloud AI requires only wiring `SYSTEM_INSTRUCTION` into the service, providing a clear upgrade path without redesigning the system.
 
 ### 2.2 Knowledge Base Design
 
@@ -185,7 +190,21 @@ The system implements two roles:
 - **User Role:** Access to AI chat, ticket submission, chat history
 - **Admin Role:** Access to analytics dashboard, active ticket queue, full ticket history/records, CSV export
 
-Authentication uses pre-seeded accounts modelled on an Active Directory system, with 8 user accounts and dedicated admin credentials.
+**User Authentication:** 9 pre-seeded staff accounts modelled on an Active Directory system, each with a shared password. Accounts represent real staff profiles:
+
+| Username | Full Name |
+|----------|-----------|
+| evans | Evans Adusu |
+| clive | Clive Kwesi Dsane |
+| mina | Wilhelmina Naa Yemoley Tetteh |
+| emma | Emmanuel Kofi Ansah-Anobah |
+| james | James Ofori Essilfie |
+| ruth | Ruth Jackson |
+| daniel | Daniel Asumadu |
+| eben | Ebenezer Sika-Sackinor Amanor |
+| user | User (generic) |
+
+**Admin Authentication:** The admin portal requires three factors — username, password, and a 6-digit 2FA code — simulating enterprise multi-factor authentication (MFA) to prevent unauthorised access to the ticket management dashboard.
 
 #### 3.3.2 AI Chat Interface
 
@@ -337,7 +356,7 @@ The AI system provides a **99%+ reduction in first response time** for common qu
 2. **No System Integration:** The chatbot cannot perform actions (e.g., resetting a password via Active Directory API, checking server status via monitoring APIs). It provides guidance only.
 3. **Language:** The system currently operates in English. Twi, Ga, or Ewe language support would significantly improve accessibility for some staff.
 4. **No Real-Time Admin Notifications:** Admins must manually refresh to see new tickets; there is no push notification system for urgent escalations.
-5. **Authentication Simplicity:** Pre-seeded credentials do not integrate with real Active Directory or LDAP systems, limiting enterprise-grade identity management.
+5. **Authentication Simplicity:** Pre-seeded credentials with a simulated 2FA code do not integrate with real Active Directory, LDAP, or TOTP authenticator apps, limiting enterprise-grade identity management.
 
 ### 4.2 Comparison with Existing Solutions
 
@@ -444,7 +463,7 @@ The system operates within the bounds of IT acceptable use policies:
 | Risk | Likelihood | Impact | Mitigation |
 |------|-----------|--------|-----------|
 | AI provides incorrect troubleshooting steps | Medium | Medium | Human escalation always available; steps are conservative |
-| Unauthorised access to admin dashboard | Low | High | Role-based access; session expires on tab close |
+| Unauthorised access to admin dashboard | Low | High | Role-based access; 2FA code required; session expires on tab close |
 | Data breach of ticket personal info | Low | High | RLS on database; env vars for credentials |
 | System unavailability (Vercel/Supabase outage) | Low | Medium | localStorage fallback; Vercel SLA 99.99% |
 | User over-reliance on AI, ignoring human IT | Medium | Low | System always promotes escalation when appropriate |
