@@ -21,25 +21,25 @@ export const DEFAULT_MESSAGE: Message = {
 
 export async function loadUserMessages(username: string): Promise<Message[]> {
   if (supabase) {
-    try {
-      const { data } = await supabase
-        .from('user_chats')
-        .select('messages')
-        .eq('username', username)
-        .maybeSingle();
+    const { data, error } = await supabase
+      .from('user_chats')
+      .select('messages')
+      .eq('username', username)
+      .maybeSingle();
 
-      if (data?.messages?.length) {
-        return (data.messages as any[]).map((m) => ({
-          ...m,
-          timestamp: new Date(m.timestamp),
-        }));
-      }
+    if (error) {
+      console.error('[db] loadUserMessages error:', error);
+    } else if (data?.messages?.length) {
+      return (data.messages as any[]).map((m) => ({
+        ...m,
+        timestamp: new Date(m.timestamp),
+      }));
+    } else {
       return [DEFAULT_MESSAGE];
-    } catch {
-      // fall through to localStorage
     }
   }
 
+  // localStorage fallback
   try {
     const stored = localStorage.getItem(LS_CHAT(username));
     if (!stored) return [DEFAULT_MESSAGE];
@@ -57,14 +57,15 @@ export async function saveUserMessages(
   messages: Message[]
 ): Promise<void> {
   if (supabase) {
-    try {
-      await supabase.from('user_chats').upsert(
-        { username, messages, updated_at: new Date().toISOString() },
-        { onConflict: 'username' }
-      );
+    const { error } = await supabase.from('user_chats').upsert(
+      { username, messages, updated_at: new Date().toISOString() },
+      { onConflict: 'username' }
+    );
+    if (error) {
+      console.error('[db] saveUserMessages error:', error);
+      // fall through to localStorage backup
+    } else {
       return;
-    } catch {
-      // fall through
     }
   }
   localStorage.setItem(LS_CHAT(username), JSON.stringify(messages));
@@ -74,15 +75,15 @@ export async function saveUserMessages(
 
 export async function loadAllTickets(): Promise<Ticket[]> {
   if (supabase) {
-    try {
-      const { data } = await supabase
-        .from('tickets')
-        .select('*')
-        .order('created_at', { ascending: false });
+    const { data, error } = await supabase
+      .from('tickets')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-      if (data) return data.map(rowToTicket);
-    } catch {
-      // fall through
+    if (error) {
+      console.error('[db] loadAllTickets error:', error);
+    } else if (data) {
+      return data.map(rowToTicket);
     }
   }
 
@@ -100,10 +101,9 @@ export async function loadAllTickets(): Promise<Ticket[]> {
 
 export async function insertTicket(ticket: Ticket): Promise<void> {
   if (supabase) {
-    try {
-      await supabase.from('tickets').insert(ticketToRow(ticket));
-    } catch {
-      // silent — localStorage backup handled in App.tsx
+    const { error } = await supabase.from('tickets').insert(ticketToRow(ticket));
+    if (error) {
+      console.error('[db] insertTicket error:', error);
     }
   }
 }
@@ -114,13 +114,12 @@ export async function patchTicket(
   closeReason?: string
 ): Promise<void> {
   if (supabase) {
-    try {
-      await supabase
-        .from('tickets')
-        .update({ status, close_reason: closeReason ?? null })
-        .eq('id', id);
-    } catch {
-      // silent — localStorage backup handled in App.tsx
+    const { error } = await supabase
+      .from('tickets')
+      .update({ status, close_reason: closeReason ?? null })
+      .eq('id', id);
+    if (error) {
+      console.error('[db] patchTicket error:', error);
     }
   }
 }
