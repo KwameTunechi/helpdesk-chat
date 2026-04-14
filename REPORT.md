@@ -494,4 +494,4 @@ The system is deployable immediately via Vercel with a Supabase backend, requiri
 
 *Document prepared as part of AI Tools & Innovation course assessment.*
 *System: FixChat IT Helpdesk | Repository: github.com/KwameTunechi/helpdesk-chat*
-*Deployment: helpdesk-chat.vercel.app*
+*Deployment: https://helpdesk-chat.vercel.app*
