@@ -19,6 +19,19 @@ const ACTIVE_DIRECTORY: Record<string, string> = {
   eben: 'user123'
 };
 
+// Full display names for each account
+const FULL_NAMES: Record<string, string> = {
+  user: 'User',
+  evans: 'Evans Adusu',
+  clive: 'Clive Kwesi Dsane',
+  mina: 'Wilhelmina Naa Yemoley Tetteh',
+  emma: 'Emmanuel Kofi Ansah-Anobah',
+  james: 'James Ofori Essilfie',
+  ruth: 'Ruth Jackson',
+  daniel: 'Daniel Asumadu',
+  eben: 'Ebenezer Sika-Sackinor Amanor'
+};
+
 const UserLoginPage: React.FC<UserLoginPageProps> = ({ onLogin, onBack }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -44,7 +57,7 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onLogin, onBack }) => {
         setIsLoading(false);
         return;
       }
-      onLogin(key);
+      onLogin(FULL_NAMES[key] || key);
     }, 600);
   };
 
